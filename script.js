@@ -1,11 +1,66 @@
+/**
+ * Main Script for Employee List Display
+ * Handles rendering and managing the employee list
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
-    const employeeForm = document.getElementById('employeeForm');
     const employeeTableBody = document.querySelector('#employeeTable tbody');
+    const employeeCount = document.getElementById('employeeCount');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const noDataMessage = document.getElementById('noDataMessage');
 
-    let employees = JSON.parse(localStorage.getItem('employees')) || [];
+    // Render all employees on page load
+    renderEmployees();
 
+    // Search functionality
+    searchBtn.addEventListener('click', () => {
+        const query = searchInput.value;
+        if (query.trim() === '') {
+            renderEmployees();
+        } else {
+            const results = DB.searchEmployees(query);
+            renderEmployeesData(results);
+        }
+    });
+
+    // Clear search
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        renderEmployees();
+    });
+
+    // Allow search on Enter key
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            searchBtn.click();
+        }
+    });
+
+    /**
+     * Render all employees from database
+     */
     function renderEmployees() {
-        employeeTableBody.innerHTML = ''; // Clear existing rows
+        const employees = DB.getAllEmployees();
+        renderEmployeesData(employees);
+    }
+
+    /**
+     * Render employee data to table
+     * @param {Array} employees - Array of employee objects to render
+     */
+    function renderEmployeesData(employees) {
+        employeeTableBody.innerHTML = '';
+        employeeCount.textContent = employees.length;
+
+        if (employees.length === 0) {
+            noDataMessage.style.display = 'block';
+            return;
+        }
+
+        noDataMessage.style.display = 'none';
+
         employees.forEach((employee, index) => {
             const row = employeeTableBody.insertRow();
             row.insertCell(0).textContent = employee.name;
@@ -14,37 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
             row.insertCell(3).textContent = employee.email;
 
             const actionsCell = row.insertCell(4);
+            
+            // Delete button
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
-            deleteButton.classList.add('delete-btn'); // Optional: for styling
-            deleteButton.onclick = () => deleteEmployee(index);
+            deleteButton.classList.add('btn', 'btn-delete');
+            deleteButton.onclick = () => {
+                if (confirm('Are you sure you want to delete this employee?')) {
+                    const result = DB.deleteEmployee(index);
+                    if (result.success) {
+                        renderEmployees();
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                }
+            };
+            
             actionsCell.appendChild(deleteButton);
         });
     }
-
-    function addEmployee(event) {
-        event.preventDefault(); // Prevent default form submission
-
-        const name = document.getElementById('employeeName').value;
-        const id = document.getElementById('employeeID').value;
-        const department = document.getElementById('employeeDepartment').value;
-        const email = document.getElementById('employeeEmail').value;
-
-        const newEmployee = { name, id, department, email };
-        employees.push(newEmployee);
-        localStorage.setItem('employees', JSON.stringify(employees));
-        renderEmployees();
-        employeeForm.reset(); // Clear form fields
-    }
-
-    function deleteEmployee(index) {
-        employees.splice(index, 1); // Remove employee from array
-        localStorage.setItem('employees', JSON.stringify(employees));
-        renderEmployees();
-    }
-
-    employeeForm.addEventListener('submit', addEmployee);
-
-    // Initial render when the page loads
-    renderEmployees();
 });

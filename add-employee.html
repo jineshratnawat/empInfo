@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Employee</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Employee</h1>
+        
+        <form id="employeeForm">
+            <div class="form-group">
+                <label for="employeeName">Name:</label>
+                <input type="text" id="employeeName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="employeeID">Employee ID:</label>
+                <input type="text" id="employeeID" required>
+            </div>
+
+            <div class="form-group">
+                <label for="employeeDepartment">Department:</label>
+                <input type="text" id="employeeDepartment" required>
+            </div>
+
+            <div class="form-group">
+                <label for="employeeEmail">Email:</label>
+                <input type="email" id="employeeEmail" required>
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-primary">Add Employee</button>
+                <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+        </form>
+
+        <div id="successMessage" class="success-message" style="display: none;">
+            Employee added successfully!
+        </div>
+
+        <a href="index.html" class="back-link">Back to Employee List</a>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="add-employee.js"></script>
+</body>
+</html>
