@@ -1,13 +1,13 @@
 /**
  * Employee Form Handler
- * Handles form submission and employee addition
+ * Handles form submission and employee addition via API
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     const employeeForm = document.getElementById('employeeForm');
     const successMessage = document.getElementById('successMessage');
 
-    employeeForm.addEventListener('submit', function(event) {
+    employeeForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
         // Get form values
@@ -30,24 +30,24 @@ document.addEventListener('DOMContentLoaded', () => {
             email
         };
 
-        // Add employee using DB module
-        const result = DB.addEmployee(newEmployee);
+        try {
+            // Add employee using API
+            await APIClient.addEmployee(newEmployee);
 
-        if (result.success) {
             // Show success message
             successMessage.style.display = 'block';
-            successMessage.textContent = result.message;
+            successMessage.textContent = 'Employee added successfully!';
 
             // Clear form
             employeeForm.reset();
 
-            // Hide message after 2 seconds and redirect
+            // Redirect after 2 seconds
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 2000);
-        } else {
+        } catch (error) {
             // Show error message
-            alert('Error: ' + result.message);
+            alert('Error: ' + error.message);
         }
     });
 });

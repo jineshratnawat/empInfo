@@ -1,6 +1,6 @@
 /**
  * Main Script for Employee List Display
- * Handles rendering and managing the employee list
+ * Handles rendering and managing the employee list via API
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,13 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     renderEmployees();
 
     // Search functionality
-    searchBtn.addEventListener('click', () => {
+    searchBtn.addEventListener('click', async () => {
         const query = searchInput.value;
         if (query.trim() === '') {
             renderEmployees();
         } else {
-            const results = DB.searchEmployees(query);
-            renderEmployeesData(results);
+            try {
+                const results = await APIClient.searchEmployees(query);
+                renderEmployeesData(results);
+            } catch (error) {
+                alert('Error searching employees: ' + error.message);
+            }
         }
     });
 
@@ -39,11 +43,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /**
-     * Render all employees from database
+     * Render all employees from database via API
      */
-    function renderEmployees() {
-        const employees = DB.getAllEmployees();
-        renderEmployeesData(employees);
+    async function renderEmployees() {
+        try {
+            const employees = await APIClient.getAllEmployees();
+            renderEmployeesData(employees);
+        } catch (error) {
+            noDataMessage.textContent = 'Error loading employees: ' + error.message;
+            noDataMessage.style.display = 'block';
+        }
     }
 
     /**
@@ -55,13 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
         employeeCount.textContent = employees.length;
 
         if (employees.length === 0) {
+            noDataMessage.textContent = 'No employees found.';
             noDataMessage.style.display = 'block';
             return;
         }
 
         noDataMessage.style.display = 'none';
 
-        employees.forEach((employee, index) => {
+        employees.forEach((employee) => {
             const row = employeeTableBody.insertRow();
             row.insertCell(0).textContent = employee.name;
             row.insertCell(1).textContent = employee.id;
@@ -74,13 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
             deleteButton.classList.add('btn', 'btn-delete');
-            deleteButton.onclick = () => {
+            deleteButton.onclick = async () => {
                 if (confirm('Are you sure you want to delete this employee?')) {
-                    const result = DB.deleteEmployee(index);
-                    if (result.success) {
+                    try {
+                        await APIClient.deleteEmployee(employee.id);
                         renderEmployees();
-                    } else {
-                        alert('Error: ' + result.message);
+                    } catch (error) {
+                        alert('Error deleting employee: ' + error.message);
                     }
                 }
             };
