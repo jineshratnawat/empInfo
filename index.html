@@ -1,50 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Information System</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Employee Data Entry</title>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Employee Information Management</h1>
-            <a href="add-employee.html" class="btn btn-primary">+ Add New Employee</a>
-        </div>
+  <h2>Employee Data Entry Form</h2>
 
-        <div class="search-section">
-            <input type="text" id="searchInput" placeholder="Search by name or department...">
-            <button id="searchBtn" class="btn btn-secondary">Search</button>
-            <button id="clearSearchBtn" class="btn btn-secondary">Clear</button>
-        </div>
+  <form id="entryForm">
+    <label>Employee ID:</label><br>
+    <input type="text" id="employeeId" required><br><br>
 
-        <div class="stats">
-            <p>Total Employees: <span id="employeeCount">0</span></p>
-        </div>
+    <label>Employee Name:</label><br>
+    <input type="text" id="employeeName" required><br><br>
 
-        <h2>Employee List</h2>
-        <table id="employeeTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Employee ID</th>
-                    <th>Department</th>
-                    <th>Email</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Employee data will be inserted here by JavaScript -->
-            </tbody>
-        </table>
+    <label>Father Name:</label><br>
+    <input type="text" id="fatherName"><br><br>
 
-        <div id="noDataMessage" class="no-data-message" style="display: none;">
-            No employees found.
-        </div>
-    </div>
+    <label>Address:</label><br>
+    <input type="text" id="address"><br><br>
 
-    <script src="api-client.js"></script>
-    <script src="script.js"></script>
+    <label>City:</label><br>
+    <input type="text" id="city"><br><br>
+
+    <label>Mobile:</label><br>
+    <input type="text" id="mobile"><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" id="email"><br><br>
+
+    <label>Date of Birth (DOB):</label><br>
+    <input type="date" id="dob"><br><br>
+
+    <label>Date of Joining (DOJ):</label><br>
+    <input type="date" id="doj"><br><br>
+
+    <label>PAN:</label><br>
+    <input type="text" id="pan"><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    document.getElementById("entryForm").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const data = {
+        employeeId: document.getElementById("employeeId").value,
+        employeeName: document.getElementById("employeeName").value,
+        fatherName: document.getElementById("fatherName").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        mobile: document.getElementById("mobile").value,
+        email: document.getElementById("email").value,
+        dob: document.getElementById("dob").value,
+        doj: document.getElementById("doj").value,
+        pan: document.getElementById("pan").value,
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbzUDfumvE3MKktrRtKWA9OiQB6MIYlgDpY8oQlT8lxZdUKbA0qa0LrSKKmLgeTkN4wF/exec", {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(data)
+      });
+
+      document.getElementById("status").innerText = "Data submitted successfully!";
+      document.getElementById("entryForm").reset();
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Search</title>
+</head>
+<body>
+  <h2>Search Employee Data</h2>
+
+  <input type="text" id="searchId" placeholder="Enter Employee ID">
+  <button onclick="searchData()">Search</button>
+
+  <h3>Result:</h3>
+  <pre id="result"></pre>
+
+  <script>
+    function searchData() {
+      const empId = document.getElementById("searchId").value;
+
+      fetch("https://script.google.com/macros/s/AKfycbzUDfumvE3MKktrRtKWA9OiQB6MIYlgDpY8oQlT8lxZdUKbA0qa0LrSKKmLgeTkN4wF/exec?employeeId=" + empId)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          document.getElementById("result").innerText = "Not found or error.";
+        });
+    }
+  </script>
+</body>
+</html>
