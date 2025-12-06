@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Login & Update</title>
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    input, textarea { width: 300px; padding: 5px; }
+    button { padding: 8px 15px; cursor: pointer; }
+  </style>
+</head>
+
+<body>
+
+<h2>User Login</h2>
+
+<div id="loginBox">
+  <label>Employee ID:</label><br>
+  <input type="text" id="loginId" required><br><br>
+
+  <label>Password (DWP):</label><br>
+  <input type="password" id="loginPwd" required><br><br>
+
+  <button id="loginBtn">Login</button>
+</div>
+
+<div id="updateBox" style="display:none;">
+  <h2>Your Profile</h2>
+
+  <form id="updateForm">
+
+    <label>Employee ID (Locked):</label><br>
+    <input type="text" id="employeeId" readonly><br><br>
+
+    <!-- other fields omitted for brevity — keep same ids as earlier -->
+    <label>Name:</label><br>
+    <input type="text" id="employeeName"><br><br>
+
+    <label>Father Name:</label><br>
+    <input type="text" id="fatherName"><br><br>
+
+    <label>Department:</label><br>
+    <input type="text" id="department"><br><br>
+
+    <label>Designation:</label><br>
+    <input type="text" id="designation"><br><br>
+
+    <label>DOJ:</label><br>
+    <input type="date" id="doj"><br><br>
+
+    <label>DOB:</label><br>
+    <input type="date" id="dob"><br><br>
+
+    <label>Mobile:</label><br>
+    <input type="text" id="mobile"><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" id="email"><br><br>
+
+    <label>Aadhar:</label><br>
+    <input type="text" id="aadhar"><br><br>
+
+    <label>PAN:</label><br>
+    <input type="text" id="pan"><br><br>
+
+    <label>Blood Group:</label><br>
+    <input type="text" id="blood"><br><br>
+
+    <label>Address:</label><br>
+    <textarea id="address"></textarea><br><br>
+
+    <label>City:</label><br>
+    <input type="text" id="city"><br><br>
+
+    <label>mAnni:</label><br>
+    <input type="text" id="mAnni"><br><br>
+
+    <label>DWP (Password) — Locked:</label><br>
+    <input type="text" id="dwp" readonly><br><br>
+
+    <button type="submit" id="updateBtn">Update</button>
+  </form>
+
+  <p id="msg" style="font-weight:bold;color:green;"></p>
+
+  <button style="margin-top:20px;" id="logoutBtn">Login Again</button>
+</div>
+
+<script>
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxX2LLjDHw81RAL8LNB86kRJgisnLppHWI3AwgAIkRNtk0KRrTMIh9FEVFA4nShPekI/exec"; // ← set new URL
+
+// Helper to POST JSON and parse JSON response
+async function postJSON(payload) {
+  const res = await fetch(WEBAPP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    cache: "no-store"
+  });
+  return await res.json();
+}
+
+// LOGIN
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  const id = document.getElementById("loginId").value.trim();
+  const pwd = document.getElementById("loginPwd").value.trim();
+
+  if (!id || !pwd) {
+    alert("Please enter both Employee ID and Password");
+    return;
+  }
+
+  try {
+    const data = await postJSON({ action: "login", employeeId: id, pwd: pwd });
+
+    if (!data.success) {
+      alert(data.message);
+      return; // stop here — no data shown
+    }
+
+    // success — show profile
+    window.rowNumber = data.rowNumber;
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("updateBox").style.display = "block";
+
+    Object.keys(data.record).forEach(key => {
+      const el = document.getElementById(key);
+      if (el) el.value = data.record[key];
+    });
+
+  } catch (err) {
+    alert("Login error: " + err.message);
+  }
+});
+
+// UPDATE
+document.getElementById("updateForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    action: "update",
+    rowNumber: window.rowNumber,
+    employeeId: document.getElementById("employeeId").value,
+    employeeName: document.getElementById("employeeName").value,
+    fatherName: document.getElementById("fatherName").value,
+    department: document.getElementById("department").value,
+    designation: document.getElementById("designation").value,
+    doj: document.getElementById("doj").value,
+    dob: document.getElementById("dob").value,
+    mobile: document.getElementById("mobile").value,
+    email: document.getElementById("email").value,
+    aadhar: document.getElementById("aadhar").value,
+    pan: document.getElementById("pan").value,
+    blood: document.getElementById("blood").value,
+    address: document.getElementById("address").value,
+    city: document.getElementById("city").value,
+    mAnni: document.getElementById("mAnni").value,
+    dwp: document.getElementById("dwp").value
+  };
+
+  try {
+    const res = await postJSON(payload);
+    document.getElementById("msg").innerText = res.message || (res.success ? "Updated" : "Failed");
+    document.getElementById("updateBtn").disabled = true;
+  } catch (err) {
+    alert("Update error: " + err.message);
+  }
+});
+
+// LOGOUT
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  location.reload();
+});
+</script>
+
+</body>
+</html>

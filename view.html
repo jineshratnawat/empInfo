@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>All Employees</title>
+</head>
+
+<body>
+
+<h2>Employees List1</h2>
+<table border="1" id="tbl"></table>
+
+<script>
+async function load() {
+  const res = await fetch("https://script.google.com/macros/s/AKfycbyFEtlv9vICsVoRCxcCr2NDacT3REj04pv_Wd4kCzlgR89D389cJLcm_h-T9k3pOriJ/exec?action=getAll");
+  const data = await res.json();
+  const emp = data.employees;
+
+  let table = "<tr>";
+  Object.keys(emp[0]).forEach(h => table += `<th>${h}</th>`);
+  table += "</tr>";
+
+  emp.forEach(r => {
+    table += "<tr>";
+    Object.values(r).forEach(v => table += `<td>${v}</td>`);
+    table += "</tr>";
+  });
+
+  document.getElementById("tbl").innerHTML = table;
+}
+
+load();
+</script>
+
+</body>
+</html>
